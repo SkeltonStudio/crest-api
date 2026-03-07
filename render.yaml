@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: crest-api
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
+    envVars:
+      - key: NEO4J_URI
+        value: neo4j+s://73be1fb8.databases.neo4j.io
+      - key: NEO4J_USER
+        value: 73be1fb8
+      - key: NEO4J_PASSWORD
+        value: _gE4KiNDKAeM8RvtsGaiUboa6phvMey7x6eu5_2lBJg
+      - key: ANTHROPIC_API_KEY
+        sync: false  # set manually in Render dashboard
