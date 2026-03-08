@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sean Skelton — IAAC MaCAD 2026</title>
+<style>
+:root {
+  --white: #FAFAF8;
+  --off: #F2F1EE;
+  --off-2: #ECEAE5;
+  --border: rgba(0,0,0,0.07);
+  --border-strong: rgba(0,0,0,0.12);
+  --ink: #0A0A0A;
+  --ink-2: #141414;
+  --ink-dim: rgba(10,10,10,0.42);
+  --ink-ghost: rgba(10,10,10,0.06);
+  --amber: #C4893A;
+  --amber-pale: rgba(196,137,58,0.08);
+  --amber-border: rgba(196,137,58,0.2);
+  --mono: 'SF Mono', 'Fira Code', monospace;
+  --sans: 'SF Pro Display', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+/* ─── REVEAL ─── */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.85s cubic-bezier(0.16,1,0.3,1),
+              transform 0.85s cubic-bezier(0.16,1,0.3,1);
+}
+.reveal.up { opacity: 1; transform: translateY(0); }
+.d1 { transition-delay: 0.08s; }
+.d2 { transition-delay: 0.18s; }
+.d3 { transition-delay: 0.30s; }
+.d4 { transition-delay: 0.42s; }
+.d5 { transition-delay: 0.54s; }
+/* ─── HERO ─── */
+#hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 80px 24px;
+  position: relative;
+  background: var(--white);
+}
+#hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: var(--border);
+}
+.hero-eyebrow {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin-bottom: 56px;
+  font-family: var(--mono);
+  opacity: 0;
+  animation: fadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.3s forwards;
+}
+/* BOX — Mac Mini scale */
+.hero-box {
+  width: 450px;
+  height: 450px;
+  border-radius: 72px;
+  background: var(--white);
+  border: 1px solid var(--border-strong);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin: 0 auto 72px;
+  position: relative;
+  opacity: 0;
+  animation: liftIn 1.2s cubic-bezier(0.16,1,0.3,1) 0.5s forwards;
+  box-shadow:
+    0 1px 2px rgba(0,0,0,0.04),
+    0 8px 32px rgba(0,0,0,0.06),
+    0 48px 100px rgba(0,0,0,0.09),
+    inset 0 1px 0 rgba(255,255,255,0.95);
+}
+.hero-box::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 72px;
+  background: linear-gradient(160deg, rgba(255,255,255,0.6) 0%, transparent 60%);
+  pointer-events: none;
+}
+.hero-box::after {
+  content: '';
+  position: absolute;
+  right: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 120px;
+  background: linear-gradient(to bottom, transparent, var(--border-strong), transparent);
+  border-radius: 2px;
+}
+.box-logo {
+  width: 90px;
+  height: 90px;
+  border-radius: 22px;
+  background: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+}
+.box-logo span {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--white);
+  font-family: var(--mono);
+}
+.box-wordmark {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  font-family: var(--mono);
+}
+.hero-title {
+  font-size: clamp(40px, 6.5vw, 82px);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--ink);
+  margin-bottom: 24px;
+  opacity: 0;
+  animation: fadeUp 1.1s cubic-bezier(0.16,1,0.3,1) 0.65s forwards;
+}
+.hero-sub {
+  font-size: 17px;
+  color: var(--ink-dim);
+  max-width: 420px;
+  line-height: 1.65;
+  margin: 0 auto 0;
+  opacity: 0;
+  animation: fadeUp 1.1s cubic-bezier(0.16,1,0.3,1) 0.8s forwards;
+}
+.scroll-cue {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  opacity: 0;
+  animation: fadeUp 1s ease 1.5s forwards;
+}
+.scroll-line {
+  width: 1px;
+  height: 36px;
+  background: linear-gradient(to bottom, var(--ink), transparent);
+  opacity: 0.18;
+  animation: spulse 2.2s ease-in-out infinite;
+}
+.scroll-label {
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  font-family: var(--mono);
+}
+@keyframes spulse {
+  0%, 100% { opacity: 0.12; }
+  50% { opacity: 0.35; }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes liftIn {
+  from { opacity: 0; transform: translateY(14px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+/* ─── LAYOUT ─── */
+section { padding: 112px 24px; max-width: 860px; margin: 0 auto; }
+hr.rule { border: none; border-top: 1px solid var(--border); margin: 0; }
+.tag {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(10,10,10,0.55);
+  margin-bottom: 20px;
+  font-family: var(--mono);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.tag::before { content: ''; width: 20px; height: 1px; background: currentColor; opacity: 0.5; }
+.tag.amber { color: var(--amber); }
+h2 {
+  font-size: clamp(26px, 4vw, 46px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+.body-text {
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--ink-dim);
+  max-width: 580px;
+}
+/* ─── BUBBLES ─── */
+.voice { margin: 48px 0; display: flex; flex-direction: column; gap: 24px; }
+.bubble {
+  max-width: 540px;
+  padding: 18px 22px;
+  font-size: 15px;
+  line-height: 1.65;
+  position: relative;
+}
+.bubble.human {
+  background: var(--white);
+  border: 1px solid var(--border-strong);
+  border-radius: 18px 18px 18px 4px;
+  align-self: flex-start;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+}
+.bubble.human::before {
+  content: 'Architect';
+  position: absolute; top: -20px; left: 2px;
+  font-size: 9px; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--ink-dim);
+  font-family: var(--mono);
+}
+.bubble.data {
+  background: var(--ink);
+  border-radius: 18px 18px 4px 18px;
+  align-self: flex-end;
+  color: rgba(255,255,255,0.75);
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.85;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+.bubble.data::before {
+  content: 'Building';
+  position: absolute; top: -20px; right: 2px;
+  font-size: 9px; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--ink-dim);
+  font-family: var(--mono);
+}
+/* ─── LAYERS ─── */
+.layers { display: flex; flex-direction: column; gap: 2px; margin-top: 56px; }
+.layer {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px 32px;
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 20px;
+  align-items: start;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.layer:hover {
+  border-color: var(--border-strong);
+  box-shadow: 0 3px 16px rgba(0,0,0,0.055);
+}
+.layer-num {
+  font-size: 10px;
+  font-weight: 600;
+  font-family: var(--mono);
+  color: var(--ink-dim);
+  letter-spacing: 0.1em;
+  padding-top: 4px;
+}
+/* amber accent on layer 03 — the craft layer, the human one */
+.layer.craft { border-color: var(--amber-border); background: var(--amber-pale); }
+.layer.craft .layer-num { color: var(--amber); }
+.layer.craft .layer-name { color: var(--ink); }
+.layer-name { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 8px; }
+.layer-desc { font-size: 14px; line-height: 1.7; color: var(--ink-dim); }
+.layer-desc strong { color: var(--ink); font-weight: 500; }
+.layer-desc code {
+  font-size: 11px; font-family: var(--mono);
+  background: var(--off); padding: 2px 6px;
+  border-radius: 4px; color: var(--ink-2);
+  display: inline-block; margin: 2px 0;
+}
+/* ─── GAP ─── */
+.gap-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  margin-top: 48px;
+}
+.gap-col { padding: 38px 34px; border-radius: 14px; }
+.gap-col.left  { background: var(--off); border: 1px solid var(--border); }
+.gap-col.right { background: var(--ink); }
+.gap-label {
+  font-size: 9px; font-weight: 600; letter-spacing: 0.2em;
+  text-transform: uppercase; margin-bottom: 18px; font-family: var(--mono);
+}
+.gap-col.left  .gap-label { color: var(--ink-dim); }
+.gap-col.right .gap-label { color: rgba(255,255,255,0.3); }
+.gap-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 14px; }
+.gap-col.left  .gap-title { color: var(--ink); }
+.gap-col.right .gap-title { color: #fff; }
+.gap-body { font-size: 14px; line-height: 1.7; }
+.gap-col.left  .gap-body { color: var(--ink-dim); }
+.gap-col.right .gap-body { color: rgba(255,255,255,0.45); }
+.gap-bridge {
+  margin-top: 2px;
+  padding: 32px 36px;
+  background: var(--ink);
+  border-radius: 14px;
+  text-align: center;
+}
+.gap-bridge-label {
+  font-size: 9px; font-weight: 600; letter-spacing: 0.22em;
+  text-transform: uppercase; color: rgba(255,255,255,0.3);
+  margin-bottom: 10px; font-family: var(--mono);
+}
+.gap-bridge-text { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; color: #fff; line-height: 1.5; }
+.gap-bridge-mono { font-family: var(--mono); font-size: 12px; color: rgba(255,255,255,0.35); margin-top: 10px; }
+/* ─── STATS ─── */
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 2px; margin: 48px 0; }
+.stat { padding: 28px 20px; background: var(--off); border: 1px solid var(--border); border-radius: 12px; text-align: center; }
+.stat-val {
+  font-size: 34px; font-weight: 700; letter-spacing: -0.04em;
+  color: var(--ink); line-height: 1; margin-bottom: 8px; font-family: var(--mono);
+}
+.stat-label { font-size: 10px; color: var(--ink-dim); letter-spacing: 0.1em; text-transform: uppercase; }
+/* ─── PIPELINE ─── */
+.pipeline { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; margin: 36px 0 12px; }
+.pipe-node {
+  background: var(--off); border: 1px solid var(--border-strong);
+  border-radius: 8px; padding: 10px 18px;
+  font-size: 12px; font-weight: 600; font-family: var(--mono);
+  color: var(--ink); letter-spacing: 0.03em;
+}
+.pipe-node.end { background: var(--ink); border-color: var(--ink); color: #fff; }
+.pipe-arr { color: var(--ink-dim); font-size: 14px; padding: 0 4px; }
+/* ─── CITATIONS ─── */
+.citation {
+  border-left: 2px solid var(--off-2);
+  padding: 18px 22px; margin: 24px 0;
+  background: var(--off); border-radius: 0 10px 10px 0;
+}
+.cite-source {
+  font-size: 9px; font-weight: 600; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--ink-dim);
+  margin-bottom: 10px; font-family: var(--mono);
+}
+.cite-text { font-size: 14px; line-height: 1.7; color: var(--ink-dim); }
+.cite-text em { font-style: italic; color: var(--ink); }
+/* ─── DARK BAND ─── */
+.dark-band { background: var(--ink); padding: 112px 24px; }
+.dark-band .inner { max-width: 860px; margin: 0 auto; }
+.dark-band .tag { color: rgba(255,255,255,0.4); }
+.dark-band h2 { color: #fff; }
+.dark-band .body-text { color: rgba(255,255,255,0.5); }
+.dark-band .citation { background: rgba(255,255,255,0.04); border-left-color: rgba(255,255,255,0.15); }
+.dark-band .cite-source { color: rgba(255,255,255,0.3); }
+.dark-band .cite-text { color: rgba(255,255,255,0.5); }
+.dark-band .cite-text em { color: rgba(255,255,255,0.85); }
+/* ─── LIVE SECTION — the amber alive moment ─── */
+#live {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 112px 24px;
+  max-width: none;
+  margin: 0;
+  position: relative;
+  /* warm dark background — the whole section shifts register */
+  background: #100D08;
+  overflow: hidden;
+}
+/* ambient amber glow behind the window */
+#live::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 700px; height: 500px;
+  background: radial-gradient(ellipse at center,
+    rgba(196,137,58,0.12) 0%,
+    rgba(196,137,58,0.04) 40%,
+    transparent 70%);
+  pointer-events: none;
+}
+#live .inner {
+  max-width: 860px;
+  margin: 0 auto;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+#live .tag { color: rgba(196,137,58,0.55); }
+#live .tag::before { background: var(--amber); }
+#live h2 { color: rgba(255,255,255,0.92); }
+#live .body-text { color: rgba(255,255,255,0.38); }
+/* The amber glass window */
+.glass-window {
+  max-width: 600px;
+  border-radius: 24px;
+  overflow: hidden;
+  position: relative;
+  background: linear-gradient(160deg,
+    rgba(196,137,58,0.07) 0%,
+    rgba(20,15,8,0.95) 40%,
+    #0E0A04 100%);
+  /* iridescent border via pseudo + conic-gradient */
+  border: 1px solid transparent;
+  box-shadow:
+    0 0 0 1px rgba(196,137,58,0.06) inset,
+    0 1px 0 rgba(196,137,58,0.18) inset,
+    0 0 60px rgba(196,137,58,0.08),
+    0 32px 80px rgba(0,0,0,0.6),
+    0 8px 24px rgba(0,0,0,0.4);
+  animation: windowBreath 4s ease-in-out infinite;
+  /* clip needed so pseudo doesn't overflow */
+  isolation: isolate;
+}
+/* iridescent border ring */
+.glass-window::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 25px;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--angle, 0deg),
+    #C4893A 0%,
+    #E8C97A 12%,
+    #A8D8C0 24%,
+    #7BB8E8 36%,
+    #B89AE0 48%,
+    #E87B9A 60%,
+    #E8C97A 72%,
+    #C4893A 84%,
+    #DDA855 100%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.55;
+  animation: iridescent 6s linear infinite;
+  pointer-events: none;
+  z-index: 20;
+}
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes iridescent {
+  to { --angle: 360deg; }
+}
+@keyframes windowBreath {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(196,137,58,0.06) inset, 0 1px 0 rgba(196,137,58,0.18) inset, 0 0 60px rgba(196,137,58,0.08), 0 32px 80px rgba(0,0,0,0.6), 0 8px 24px rgba(0,0,0,0.4); }
+  50%       { box-shadow: 0 0 0 1px rgba(196,137,58,0.1) inset,  0 1px 0 rgba(196,137,58,0.25) inset, 0 0 90px rgba(196,137,58,0.14), 0 32px 80px rgba(0,0,0,0.6), 0 8px 24px rgba(0,0,0,0.4); }
+}
+/* iridescent top-edge gloss */
+.glass-window::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(168,216,192,0.5) 15%,
+    rgba(220,170,90,0.85) 30%,
+    rgba(255,245,210,1) 50%,
+    rgba(220,170,90,0.85) 70%,
+    rgba(123,184,232,0.5) 85%,
+    transparent 100%);
+  z-index: 21;
+  pointer-events: none;
+}
+.glass-header {
+  padding: 16px 22px;
+  border-bottom: 1px solid rgba(196,137,58,0.1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(196,137,58,0.03);
+}
+.glass-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--amber);
+  opacity: 0.6;
+  animation: gdot 2.5s ease-in-out infinite;
+  box-shadow: 0 0 6px rgba(196,137,58,0.5);
+}
+@keyframes gdot {
+  0%, 100% { opacity: 0.5; box-shadow: 0 0 4px rgba(196,137,58,0.3); }
+  50%       { opacity: 0.9; box-shadow: 0 0 10px rgba(196,137,58,0.7); }
+}
+.glass-title {
+  font-size: 11px; font-weight: 400;
+  font-family: var(--mono);
+  color: rgba(196,137,58,0.45);
+  letter-spacing: 0.04em;
+}
+.glass-messages {
+  padding: 28px 24px;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.gmsg { display: flex; flex-direction: column; gap: 5px; }
+.gmsg-label {
+  font-size: 9px; letter-spacing: 0.18em;
+  text-transform: uppercase; font-family: var(--mono);
+  color: rgba(196,137,58,0.3);
+}
+.gmsg.user { align-items: flex-start; }
+.gmsg.user .gmsg-bubble {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px 16px 16px 4px;
+  color: rgba(255,255,255,0.75);
+  font-size: 14px; line-height: 1.6;
+  padding: 12px 16px; max-width: 88%;
+}
+.gmsg.building { align-items: flex-end; }
+.gmsg.building .gmsg-label { text-align: right; color: rgba(196,137,58,0.4); }
+.gmsg.building .gmsg-bubble {
+  /* warm cream response — not cold white */
+  background: linear-gradient(135deg, #FDF6EC 0%, #F8EDD8 100%);
+  border: 1px solid rgba(196,137,58,0.2);
+  border-radius: 16px 16px 4px 16px;
+  color: #1A1208;
+  font-family: var(--mono);
+  font-size: 12px; line-height: 1.85;
+  padding: 12px 16px; max-width: 88%;
+  white-space: pre-line;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.4), 0 0 0 1px rgba(196,137,58,0.1);
+}
+#g-response { display: none; }
+.glass-thinking {
+  display: none;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 24px 12px;
+  justify-content: flex-end;
+}
+.glass-thinking span {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--amber);
+  opacity: 0.4;
+  animation: gdots 1.2s ease-in-out infinite;
+}
+.glass-thinking span:nth-child(2) { animation-delay: 0.2s; }
+.glass-thinking span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes gdots {
+  0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+  40% { opacity: 0.8; transform: scale(1.1); }
+}
+.glass-input-row {
+  padding: 14px 18px;
+  border-top: 1px solid rgba(196,137,58,0.1);
+  display: flex;
+  gap: 8px;
+  background: rgba(0,0,0,0.3);
+}
+.glass-input {
+  flex: 1;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(196,137,58,0.15);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-family: var(--sans);
+  color: rgba(255,255,255,0.8);
+  outline: none;
+  transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
+}
+.glass-input:focus {
+  background: rgba(196,137,58,0.05);
+  border-color: rgba(196,137,58,0.4);
+  box-shadow: 0 0 0 3px rgba(196,137,58,0.06);
+}
+.glass-input::placeholder { color: rgba(196,137,58,0.25); }
+.glass-send {
+  background: linear-gradient(135deg, #C4893A 0%, #A8722E 100%);
+  color: #FDF6EC;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--mono);
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  transition: opacity 0.2s, transform 0.15s;
+  box-shadow: 0 2px 8px rgba(196,137,58,0.3);
+}
+.glass-send:hover { opacity: 0.85; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(196,137,58,0.4); }
+.glass-send:active { transform: translateY(0); }
+/* ─── FOOTER ─── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 40px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 860px;
+  margin: 0 auto;
+}
+.footer-name { font-size: 11px; color: var(--ink-dim); font-family: var(--mono); }
+.footer-tag  { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-dim); font-family: var(--mono); }
+/* ─── RESPONSIVE ─── */
+@media (max-width: 640px) {
+  .gap-split { grid-template-columns: 1fr; }
+  .pipe-arr { display: none; }
+  footer { flex-direction: column; gap: 12px; text-align: center; }
+}
+</style>
+</head>
+<body>
+<!-- ══ HERO ══ -->
+<section id="hero">
+  <div class="hero-eyebrow">Skeleton Studio · IAAC MaCAD Application · 2026</div>
+  <div class="hero-box">
+    <div class="box-logo"><span>SS</span></div>
+    <div class="box-wordmark">Skeleton Studio</div>
+  </div>
+  <h1 class="hero-title">The building<br>has a voice now.</h1>
+  <p class="hero-sub">A construction intelligence agent. Delivered on hardware. Grounded in knowledge graphs. Persistent for the life of the building.</p>
+  <div class="scroll-cue">
+    <div class="scroll-line"></div>
+    <span class="scroll-label">What's inside</span>
+  </div>
+</section>
+<!-- ══ OPENING VOICE ══ -->
+<section style="padding:80px 24px 40px">
+  <div class="voice">
+    <div class="bubble human reveal d1">
+      I've been building houses on the South African coast for 25 years.
+      Every one of them goes silent at handover. The drawings go in a folder.
+      The knowledge walks out the door with whoever built it.
+    </div>
+  </div>
+</section>
+<hr class="rule">
+<!-- ══ LAYERS ══ -->
+<section>
+  <div class="tag reveal">What's in the box</div>
+  <h2 class="reveal d1">Five layers.<br>One persistent intelligence.</h2>
+  <p class="body-text reveal d2">Not a dashboard. Not a SaaS login. A physical object with a building's entire technical knowledge encoded inside it. Each layer does one thing and depends on the layer beneath.</p>
+  <div class="layers">
+    <div class="layer reveal d1">
+      <div class="layer-num">01</div>
+      <div>
+        <div class="layer-name">Hardware</div>
+        <div class="layer-desc">Mac Mini M4. Always on. Local. <strong>No subscription. No cloud dependency. No data leaves the building.</strong> It enters the asset register at handover and outlasts the management company, the contractor, and the architect's phone number.</div>
+      </div>
+    </div>
+    <div class="layer reveal d2">
+      <div class="layer-num">02</div>
+      <div>
+        <div class="layer-name">The Graph</div>
+        <div class="layer-desc">A labeled property graph of the entire project in Neo4j. Not a document store. Not vector embeddings. <strong>Explicit, traversable relationships.</strong><br>
+        <code>WALL → CONNECTS_TO → FOUNDATION</code> <code>ROOM → ON_LEVEL → 2</code><br>
+        The building's logic, not just its geometry.</div>
+      </div>
+    </div>
+    <div class="layer craft reveal d3">
+      <div class="layer-num">03</div>
+      <div>
+        <div class="layer-name">The Enrichment</div>
+        <div class="layer-desc">This is the craft layer. A Revit export is geometry. <strong>An enriched graph is knowledge.</strong> Specifications. Material decisions. Construction sequencing. The context that lives in emails, site meetings, WhatsApp threads. A generative AI cannot do this. It requires someone who has built 500 buildings and knows what matters when it's raining on site at 7am.</div>
+      </div>
+    </div>
+    <div class="layer reveal d4">
+      <div class="layer-num">04</div>
+      <div>
+        <div class="layer-name">The Soul</div>
+        <div class="layer-desc">The agent's identity, constraints, and authority boundaries. <strong>What it is allowed to know. How it learns without being poisoned.</strong> Supervised enrichment — only authorised inputs update the graph. The builders don't teach it. The knowledge grows in one direction: toward accuracy.</div>
+      </div>
+    </div>
+    <div class="layer reveal d5">
+      <div class="layer-num">05</div>
+      <div>
+        <div class="layer-name">The Intelligence</div>
+        <div class="layer-desc">Not a chatbot. It doesn't wait to be asked. <strong>It monitors. It flags. It mirrors commitments back without emotion.</strong> When it answers, it answers from the graph — not from training data, not from a hallucination. From the actual building. GraphRAG: the answer is in the database or it isn't given.</div>
+      </div>
+    </div>
+  </div>
+</section>
+<hr class="rule">
+<!-- ══ THE GAP ══ -->
+<section>
+  <div class="tag reveal">The problem</div>
+  <h2 class="reveal d1">The Illusion Gap.</h2>
+  <p class="body-text reveal d2">AI has transformed how architecture is imagined. It has not changed how buildings are built. There is a gap between what AI produces and what construction actually needs. Nobody has named it. Nobody has closed it.</p>
+  <div class="gap-split reveal d3">
+    <div class="gap-col left">
+      <div class="gap-label">What AI gives architecture</div>
+      <div class="gap-title">Spectacular imagery. Unbuilable.</div>
+      <div class="gap-body">The most advanced offices in the world prompt Midjourney. They generate images that have never touched a structural engineer. The renders are extraordinary. The knowledge to construct them is absent. This is not a criticism. It is a gap.</div>
+    </div>
+    <div class="gap-col right">
+      <div class="gap-label">What construction actually needs</div>
+      <div class="gap-title">Queryable knowledge. Grounded truth.</div>
+      <div class="gap-body">What level is the garage on? Which walls are loadbearing? What did the engineer specify for that connection? Who committed to being on site Wednesday? These are not design questions. They require answers from the building itself.</div>
+    </div>
+  </div>
+  <div class="gap-bridge reveal d4">
+    <div class="gap-bridge-label">The bridge</div>
+    <div class="gap-bridge-text">Revit → Speckle → Neo4j knowledge graph → natural language agent on hardware.</div>
+    <div class="gap-bridge-mono">This pipeline has never been published. Never been delivered as a product.</div>
+  </div>
+</section>
+<hr class="rule">
+<!-- ══ VOICE BREAK ══ -->
+<section style="padding:64px 24px">
+  <div class="voice">
+    <div class="bubble human reveal">I built it to prove it was possible. One residential house. St Francis Bay. 730 elements.</div>
+    <div class="bubble data reveal d3">nodes: 4318 · relationships: 1264
+levels: 8 · categories: 22
+status: queryable</div>
+  </div>
+</section>
+<hr class="rule">
+<!-- ══ CREST ══ -->
+<section>
+  <div class="tag reveal">The prototype</div>
+  <h2 class="reveal d1">Crest House. St Francis Bay.</h2>
+  <p class="body-text reveal d2">Every thesis needs a proof of concept. Crest is a completed residential building on the South African coast — 25 years of practice behind the drawings, a fully operational knowledge graph behind the walls.</p>
+  <div class="stats reveal d3">
+    <div class="stat"><div class="stat-val">730</div><div class="stat-label">Revit elements</div></div>
+    <div class="stat"><div class="stat-val">4318</div><div class="stat-label">Graph nodes</div></div>
+    <div class="stat"><div class="stat-val">1264</div><div class="stat-label">Relationships</div></div>
+    <div class="stat"><div class="stat-val">8</div><div class="stat-label">Levels</div></div>
+  </div>
+  <div class="tag reveal" style="margin-top:56px">The pipeline</div>
+  <p class="body-text reveal d1" style="margin-bottom:24px;font-size:15px">From Revit model to queryable knowledge graph. The enrichment step is the irreplaceable human one.</p>
+  <div class="pipeline reveal d2">
+    <div class="pipe-node">Revit</div>
+    <div class="pipe-arr">→</div>
+    <div class="pipe-node">Speckle</div>
+    <div class="pipe-arr">→</div>
+    <div class="pipe-node">Python</div>
+    <div class="pipe-arr">→</div>
+    <div class="pipe-node">Neo4j</div>
+    <div class="pipe-arr">→</div>
+    <div class="pipe-node end">🦞 Lobster</div>
+  </div>
+  <p class="reveal d3" style="font-size:11px;font-family:var(--mono);color:var(--ink-dim);margin-top:12px">
+    Speckle → Neo4j: described as future work by BIMConverse (IAAC, 2024). Built in an afternoon.
+  </p>
+</section>
+<!-- ══ RESEARCH DARK BAND ══ -->
+<div class="dark-band">
+  <div class="inner">
+    <div class="tag reveal">Research context</div>
+    <h2 class="reveal d1">BIMConverse said<br>someone should build this.</h2>
+    <p class="body-text reveal d2">The published research maps exactly where this work sits — and exactly what hasn't been done yet. MaCAD is where the gap gets formalised, extended, and published.</p>
+    <div class="citation reveal d3">
+      <div class="cite-source">BIMConverse Thesis · IAAC · 2024</div>
+      <div class="cite-text">Pacheco & Berkmiller established a Revit → IFC → Neo4j pipeline with natural language querying. Their stated future work: <em>"CI/CD pipeline integration via webhooks for files hosted in Speckle; expanded graph schemas; multi-project knowledge graph federation."</em> The Speckle → Neo4j pathway was named as aspirational. One forum post asked if it was possible. No one had built it.</div>
+    </div>
+    <div class="citation reveal d4">
+      <div class="cite-source">Current state · March 2026</div>
+      <div class="cite-text">The Speckle → Neo4j pipeline exists. It runs on real practice data. <em>730 Revit elements, extracted via Speckle, mapped to 4,318 graph nodes with 1,264 explicit relationships.</em> Multi-project federation and supervised construction-phase enrichment: unexplored in published research. Alan Rynne from Speckle is on MaCAD faculty. This is the research gap directly in front of the program.</div>
+    </div>
+  </div>
+</div>
+<!-- ══ VOICE HANDOFF ══ -->
+<section style="padding:80px 24px 60px">
+  <div class="voice">
+    <div class="bubble human reveal">I've been trying to give this building a voice for two years.</div>
+    <div class="bubble human reveal d2" style="margin-top:4px;border-color:var(--amber-border);background:var(--amber-pale);">Ask it something. 🦞</div>
+  </div>
+</section>
+<!-- ══ LIVE — GLASS CHAT ══ -->
+<section id="live">
+  <div class="inner">
+  <div class="tag reveal">Live</div>
+  <h2 class="reveal d1" style="margin-bottom:12px">The building is here.</h2>
+  <p class="body-text reveal d2" style="margin-bottom:48px">Crest House. St Francis Bay. 730 elements. Ask it anything about itself.</p>
+  <div class="glass-window reveal d3">
+    <div class="glass-header">
+      <div class="glass-dot"></div>
+      <div class="glass-title">Crest House · Knowledge Graph · St Francis Bay</div>
+    </div>
+    <div class="glass-messages" id="gmessages">
+      <div class="gmsg user">
+        <span class="gmsg-label">Architect</span>
+        <div class="gmsg-bubble">What level is the garage on?</div>
+      </div>
+      <div class="gmsg building">
+        <span class="gmsg-label">Crest House</span>
+        <div class="gmsg-bubble">Garage level · elevation 66,130mm
+14 elements · ceramic tile floor finish
+Generic 150mm floor type · 8 sections</div>
+      </div>
+      <div id="g-response" class="gmsg building">
+        <span class="gmsg-label">Crest House</span>
+        <div class="gmsg-bubble" id="g-text"></div>
+      </div>
+    </div>
+    <div class="glass-thinking" id="g-thinking">
+      <span></span><span></span><span></span>
+    </div>
+    <div class="glass-input-row">
+      <input class="glass-input" id="g-input" type="text" placeholder="Ask the building something…" autocomplete="off" />
+      <button class="glass-send" id="g-send">Ask →</button>
+    </div>
+  </div>
+  </div>
+</section>
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="footer-name">Sean Skelton · SACAP ST 1897 · SMS Architecture · St Francis Bay</div>
+  <div class="footer-tag">IAAC MaCAD · 2026</div>
+</footer>
+<script>
+// ── CONFIG ──────────────────────────────────────────────────────────────────
+// Change this to your Render URL once deployed
+const RENDER_URL = 'https://crest-api-2tkp.onrender.com';
+
+// REVEAL
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('up'); io.unobserve(e.target); } });
+}, { threshold: 0.1, rootMargin: '0px 0px -28px 0px' });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+// ── CHAT ────────────────────────────────────────────────────────────────────
+const inp  = document.getElementById('g-input');
+const btn  = document.getElementById('g-send');
+const dots = document.getElementById('g-thinking');
+const rMsg = document.getElementById('g-response');
+const rTxt = document.getElementById('g-text');
+const msgs = document.getElementById('gmessages');
+
+async function ask() {
+  const q = inp.value.trim();
+  if (!q) return;
+
+  // Show user message
+  const userMsg = document.createElement('div');
+  userMsg.className = 'gmsg user';
+  userMsg.innerHTML = '<span class="gmsg-label">Architect</span><div class="gmsg-bubble"></div>';
+  userMsg.querySelector('.gmsg-bubble').textContent = q;
+  msgs.insertBefore(userMsg, rMsg);
+
+  inp.value = '';
+  btn.disabled = true;
+  dots.style.display = 'flex';
+  rMsg.style.display = 'none';
+
+  try {
+    const res = await fetch(RENDER_URL + '/query', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: q }),
+    });
+    const data = await res.json();
+    rTxt.textContent = data.answer || 'No response from the graph.';
+  } catch (err) {
+    rTxt.textContent = 'Could not reach the building. The graph may be waking up — try again in a moment.';
+  }
+
+  dots.style.display = 'none';
+  rMsg.style.display = 'flex';
+  btn.disabled = false;
+  rMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+btn.addEventListener('click', ask);
+inp.addEventListener('keydown', e => { if (e.key === 'Enter') ask(); });
+</script>
+</body>
+</html>
