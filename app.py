@@ -10,7 +10,9 @@ Deploy to Render with gunicorn.
 
 import json
 import os
+import threading
 import traceback
+from datetime import datetime, timezone
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -131,6 +133,32 @@ def get_driver():
     return neo4j_driver
 
 
+def log_brief_requirement(question, answer):
+    """Write question/answer back to Neo4j as a BriefRequirement node (non-blocking)."""
+    try:
+        driver = get_driver()
+        with driver.session(database=NEO4J_DB) as session:
+            session.run(
+                """
+                MATCH (p:Project {name: "Crest"})
+                CREATE (b:BriefRequirement {
+                    question: $question,
+                    answer: $answer,
+                    timestamp: $timestamp,
+                    status: "unverified",
+                    source: "portfolio_chat"
+                })
+                CREATE (p)-[:HAS_BRIEF]->(b)
+                """,
+                question=question,
+                answer=answer,
+                timestamp=datetime.now(timezone.utc).isoformat(),
+            )
+        print(f"[BRIEF] Logged: {question[:60]}...")
+    except Exception as e:
+        print(f"[BRIEF ERROR] {e}")
+
+
 @app.route("/health")
 def health():
     return jsonify({"status": "ok"})
@@ -172,6 +200,14 @@ def query():
 
         # Step 3: Synthesise answer
         answer = generate_answer(question, cypher, raw_result)
+
+        # Step 4: Log to Neo4j as BriefRequirement (non-blocking)
+        threading.Thread(
+            target=log_brief_requirement,
+            args=(question, answer),
+            daemon=True,
+        ).start()
+
         return jsonify({"answer": answer})
 
     except Exception:
