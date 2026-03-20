@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crest — Brief Dashboard</title>
+<style>
+  :root { --bg: #1e1b17; --card: #2a2620; --border: rgba(196,164,107,0.2); --gold: #c4a46b; --ink: #e8e0d4; --dim: #8a8074; --green: #5cb85c; --red: #d9534f; --mono: 'SF Mono', 'Fira Code', monospace; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; padding: 32px 24px; }
+  .header { max-width: 900px; margin: 0 auto 32px; }
+  .header h1 { font-size: 24px; font-weight: 600; margin-bottom: 4px; }
+  .header p { color: var(--dim); font-size: 13px; font-family: var(--mono); }
+  .stats { display: flex; gap: 16px; margin-top: 16px; }
+  .stat { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 20px; text-align: center; min-width: 100px; }
+  .stat-num { font-size: 28px; font-weight: 700; color: var(--gold); }
+  .stat-label { font-size: 10px; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--dim); margin-top: 2px; }
+  .cards { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; transition: border-color 0.2s; }
+  .card:hover { border-color: var(--gold); }
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+  .question { font-size: 15px; font-weight: 500; flex: 1; }
+  .badge { font-family: var(--mono); font-size: 10px; padding: 4px 10px; border-radius: 12px; text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap; }
+  .badge-unverified { background: rgba(196,164,107,0.15); color: var(--gold); border: 1px solid rgba(196,164,107,0.3); }
+  .badge-verified { background: rgba(92,184,92,0.15); color: var(--green); border: 1px solid rgba(92,184,92,0.3); }
+  .badge-rejected { background: rgba(217,83,79,0.15); color: var(--red); border: 1px solid rgba(217,83,79,0.3); }
+  .answer { font-size: 13px; color: var(--dim); line-height: 1.5; margin-bottom: 12px; white-space: pre-wrap; font-family: var(--mono); max-height: 120px; overflow-y: auto; }
+  .card-actions { display: flex; gap: 8px; align-items: center; }
+  .card-actions button { font-family: var(--mono); font-size: 11px; padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--ink); cursor: pointer; transition: all 0.2s; }
+  .card-actions button:hover { background: rgba(196,164,107,0.1); border-color: var(--gold); }
+  .card-actions button.active-verified { background: rgba(92,184,92,0.2); border-color: var(--green); color: var(--green); }
+  .card-actions button.active-rejected { background: rgba(217,83,79,0.2); border-color: var(--red); color: var(--red); }
+  .timestamp { font-family: var(--mono); font-size: 10px; color: var(--dim); margin-left: auto; }
+  .loading { text-align: center; color: var(--dim); font-family: var(--mono); font-size: 13px; padding: 60px 0; }
+  .empty { text-align: center; color: var(--dim); padding: 60px 0; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Crest Brief Dashboard</h1>
+  <p>Questions from portfolio chat &rarr; BriefRequirement nodes</p>
+  <div class="stats" id="stats"></div>
+</div>
+<div class="cards" id="cards">
+  <div class="loading">Loading brief requirements...</div>
+</div>
+<script>
+const API = 'https://crest-api-2tkp.onrender.com';
+let allItems = [];
+
+async function load() {
+  try {
+    const res = await fetch(API + '/brief');
+    const data = await res.json();
+    allItems = data.brief || [];
+    renderStats();
+    renderCards();
+  } catch (e) {
+    document.getElementById('cards').innerHTML = '<div class="empty">Could not reach API. Is Render awake?</div>';
+  }
+}
+
+function renderStats() {
+  const total = allItems.length;
+  const verified = allItems.filter(i => i.status === 'verified').length;
+  const rejected = allItems.filter(i => i.status === 'rejected').length;
+  const unverified = allItems.filter(i => i.status === 'unverified').length;
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="stat-num">${total}</div><div class="stat-label">Total</div></div>
+    <div class="stat"><div class="stat-num" style="color:var(--gold)">${unverified}</div><div class="stat-label">Unverified</div></div>
+    <div class="stat"><div class="stat-num" style="color:var(--green)">${verified}</div><div class="stat-label">Verified</div></div>
+    <div class="stat"><div class="stat-num" style="color:var(--red)">${rejected}</div><div class="stat-label">Rejected</div></div>
+  `;
+}
+
+function renderCards() {
+  const container = document.getElementById('cards');
+  if (allItems.length === 0) {
+    container.innerHTML = '<div class="empty">No questions yet. Ask something on the portfolio!</div>';
+    return;
+  }
+  container.innerHTML = allItems.map((item, i) => {
+    const ts = item.ts ? new Date(item.ts).toLocaleString() : '';
+    const badgeClass = 'badge-' + (item.status || 'unverified');
+    return `
+      <div class="card" data-idx="${i}">
+        <div class="card-top">
+          <div class="question">${esc(item.question)}</div>
+          <span class="badge ${badgeClass}" id="badge-${i}">${item.status || 'unverified'}</span>
+        </div>
+        <div class="answer">${esc(item.answer)}</div>
+        <div class="card-actions">
+          <button onclick="setStatus(${i},'verified')" class="${item.status==='verified'?'active-verified':''}">Verify</button>
+          <button onclick="setStatus(${i},'rejected')" class="${item.status==='rejected'?'active-rejected':''}">Reject</button>
+          <button onclick="setStatus(${i},'unverified')">Reset</button>
+          <span class="timestamp">${ts}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+async function setStatus(idx, status) {
+  const item = allItems[idx];
+  try {
+    const res = await fetch(API + '/brief/status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: item.id, status }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      allItems[idx].status = status;
+      renderStats();
+      renderCards();
+    }
+  } catch (e) {
+    console.error('Failed to update status', e);
+  }
+}
+
+function esc(s) {
+  if (!s) return '';
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+load();
+</script>
+</body>
+</html>

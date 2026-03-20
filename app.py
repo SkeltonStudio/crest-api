@@ -181,6 +181,47 @@ def recent():
         return jsonify({"recent": []})
 
 
+@app.route("/brief")
+def brief_list():
+    """Return all BriefRequirement nodes for the admin dashboard."""
+    try:
+        driver = get_driver()
+        with driver.session(database=NEO4J_DB) as session:
+            result = session.run(
+                "MATCH (b:BriefRequirement) "
+                "RETURN elementId(b) AS id, b.question AS question, "
+                "b.answer AS answer, b.timestamp AS ts, "
+                "b.status AS status, b.source AS source "
+                "ORDER BY b.timestamp DESC"
+            )
+            items = [dict(r) for r in result]
+        return jsonify({"brief": items})
+    except Exception:
+        traceback.print_exc()
+        return jsonify({"brief": []})
+
+
+@app.route("/brief/status", methods=["POST"])
+def brief_update_status():
+    """Update the status of a BriefRequirement node."""
+    data = request.get_json(force=True)
+    node_id = data.get("id")
+    new_status = data.get("status")
+    if not node_id or new_status not in ("unverified", "verified", "rejected"):
+        return jsonify({"error": "Provide id and status (unverified/verified/rejected)"}), 400
+    try:
+        driver = get_driver()
+        with driver.session(database=NEO4J_DB) as session:
+            session.run(
+                "MATCH (b:BriefRequirement) WHERE elementId(b) = $id "
+                "SET b.status = $status",
+                id=node_id, status=new_status,
+            )
+        return jsonify({"ok": True, "status": new_status})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/query", methods=["POST"])
 def query():
     data = request.get_json(force=True)
