@@ -164,6 +164,23 @@ def health():
     return jsonify({"status": "ok"})
 
 
+@app.route("/recent")
+def recent():
+    """Return last 5 questions asked via portfolio chat."""
+    try:
+        driver = get_driver()
+        with driver.session(database=NEO4J_DB) as session:
+            result = session.run(
+                "MATCH (b:BriefRequirement) "
+                "RETURN b.question AS question, b.timestamp AS ts "
+                "ORDER BY b.timestamp DESC LIMIT 5"
+            )
+            questions = [{"question": r["question"], "timestamp": r["ts"]} for r in result]
+        return jsonify({"recent": questions})
+    except Exception:
+        return jsonify({"recent": []})
+
+
 @app.route("/query", methods=["POST"])
 def query():
     data = request.get_json(force=True)
