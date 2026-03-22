@@ -288,7 +288,7 @@ def query():
                 "// CANNOT_ANSWER",
                 "The graph has no Cypher query for this question. Answer from your identity and what you know about yourself directly."
             )
-            log_brief(question, answer)
+            log_brief_requirement(question, answer)
             return jsonify({"answer": answer})
 
         # Step 2: Run Cypher
