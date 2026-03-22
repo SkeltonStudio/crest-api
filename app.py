@@ -283,9 +283,13 @@ def query():
         cypher = generate_cypher(question)
 
         if "CANNOT_ANSWER" in cypher:
-            return jsonify({
-                "answer": "I can't answer that from my graph. I know my structure — walls, floors, doors, windows, levels, materials, dimensions. Ask me about those."
-            })
+            answer = generate_answer(
+                question,
+                "// CANNOT_ANSWER",
+                "The graph has no Cypher query for this question. Answer from your identity and what you know about yourself directly."
+            )
+            log_brief(question, answer)
+            return jsonify({"answer": answer})
 
         # Step 2: Run Cypher
         try:
