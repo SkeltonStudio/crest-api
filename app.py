@@ -26,7 +26,7 @@ NEO4J_USER     = os.environ.get("NEO4J_USER", "73be1fb8")
 NEO4J_PASSWORD = os.environ.get("NEO4J_PASSWORD", "_gE4KiNDKAeM8RvtsGaiUboa6phvMey7x6eu5_2lBJg")
 NEO4J_DB       = None  # Aura free tier uses default database
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY")
-CLAUDE_MODEL   = "claude-sonnet-4-20250514"
+CLAUDE_MODEL   = "claude-opus-4-8"
 
 # ── Schema context for Cypher generation ─────────────────────────────────────
 
